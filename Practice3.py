@@ -54,17 +54,30 @@ with tab2:
     else:
         st.warning("Columns 'number_of_reviews' or 'price' not found in dataset.")
 with tab3:
-    st.subheader("Advanced Analysis")
+    st.subheader("Top hosts and price distribution")
+    st.subheader("Top hosts in Madrid")
+    df_host = df.groupby(["host_name"]).size().reset_index(name="listings_count")
+    df_host_sorted = df_host.sort_values(by="listings_count", ascending=False).head(10)
+    st.dataframe(df_host_sorted)
+    #select the number of hosts
+    host_selection = st.selectbox("How many hosts do you want to visualize?", [5, 10, 20, 50])
+    st.dataframe(df_host.sort_values(by="listings_count", ascending=False).head(host_selection))
+    #visualize them
+    fig_host = px.bar(df_host.sort_values(by="listings_count", ascending=False).head(host_selection),
+                      x="host_name", y="listings_count", title="Top hosts with most Airbnbs")
+    st.plotly_chart(fig_host)
+    #price distribution per neightbourhood
+    st.subheader("Price distribution per neighbourhood")
+    df_filtered = df[["neighbourhood_group", "neighbourhood", "price"]].dropna()
+    neighbourhood_selection = st.multiselect("Please select one or more neighbourhoods", 
+                                             df_filtered["neighbourhood_group"].unique(), 
+                                             default=df_filtered["neighbourhood_group"].unique())
 
-    if "price" in df.columns and "neighbourhood" in df.columns:
-        fig_new = px.box(filtered_data, x="neighbourhood", y="price", 
-                         title="Price Distribution by Neighbourhood", 
-                         points="all")
-        st.plotly_chart(fig_new)
-    else:
-        st.warning("Columns 'price' or 'neighbourhood' not found in dataset.")
+    df_filtered = df_filtered[df_filtered["neighbourhood_group"].isin(neighbourhood_selection)]
+    df_filtered = df_filtered[df_filtered["price"] < 500]  
 
-
+    fig_price = px.box(df_filtered, x="neighbourhood", y="price", title="price distribution by neighbourhood ")
+    st.plotly_chart(fig_price)
 # Price Recommendation based on selected filters
 st.sidebar.subheader("Price Recommendation for Each Renting Type")
 user_neighborhood = st.sidebar.selectbox("Select Neighborhood", df["neighbourhood"].dropna().unique())
