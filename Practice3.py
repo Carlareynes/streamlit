@@ -55,10 +55,6 @@ with tab2:
         st.warning("Columns 'number_of_reviews' or 'price' not found in dataset.")
 with tab3:
     st.subheader("Top hosts and price distribution")
-    st.subheader("Top hosts in Madrid")
-    df_host = df.groupby(["host_name"]).size().reset_index(name="listings_count")
-    df_host_sorted = df_host.sort_values(by="listings_count", ascending=False).head(10)
-    st.dataframe(df_host_sorted)
     #select the number of hosts
     host_selection = st.selectbox("How many hosts do you want to visualize?", [5, 10, 20, 50])
     st.dataframe(df_host.sort_values(by="listings_count", ascending=False).head(host_selection))
