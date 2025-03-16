@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.title("Airbnb's Rental Analysis - Carla Reynes")
+st.title("Airbnb's rental analysis - Carla Reynes")
 df = pd.read_csv("airbnb.csv")
 
 # Sidebar Filters
@@ -21,13 +21,13 @@ with tab1:
         st.dataframe(top_listings[["name", "neighbourhood", "room_type", "price", "number_of_reviews"]])
         
         fig1 = px.bar(top_listings, x="name", y="number_of_reviews", color="neighbourhood",
-                      title="Top 10 Most Reviewed Airbnb Rentals")
+                      title="Top 10 most reviewed Airbnb rentals")
         st.plotly_chart(fig1)
     else:
         st.warning("Column 'number_of_reviews' not found in dataset.")
     
     if "minimum_nights" in df.columns:
-        fig2 = px.box(filtered_data, x="room_type", y="minimum_nights", title="Minimum Nights by Listing Type")
+        fig2 = px.box(filtered_data, x="room_type", y="minimum_nights", title="Minimum nights by room type")
         st.plotly_chart(fig2)
     else:
         st.warning("Column 'minimum_nights' not found in dataset.")
@@ -35,7 +35,7 @@ with tab1:
     if "reviews_per_month" in df.columns:
         top_reviews = df.groupby(["neighbourhood", "room_type"])["reviews_per_month"].sum().reset_index()
         fig3 = px.bar(top_reviews, x="neighbourhood", y="reviews_per_month", color="room_type",
-                      title="Most Reviewed Airbnb Rentals per Month by Neighborhood")
+                      title="Most reviewed Airbnb rentals per month by neighborhood")
         st.plotly_chart(fig3)
     else:
         st.warning("Column 'reviews_per_month' not found in dataset.")
@@ -43,7 +43,7 @@ with tab1:
 with tab2:
     st.subheader("Prices and Reviews Analysis")
     if "price" in df.columns:
-        fig4 = px.box(filtered_data, x="room_type", y="price", title="Price Distribution by Listing Type")
+        fig4 = px.box(filtered_data, x="room_type", y="price", title="Price distribution by rental type")
         st.plotly_chart(fig4)
     else:
         st.warning("Column 'price' not found in dataset.")
@@ -53,6 +53,19 @@ with tab2:
         st.plotly_chart(fig5)
     else:
         st.warning("Columns 'number_of_reviews' or 'price' not found in dataset.")
+with tab3:
+    st.subheader("Advanced Analysis")
+    if "price" in df.columns and "number_of_reviews" in df.columns:
+        correlation = filtered_data[["price", "number_of_reviews"]].corr()
+        st.write("### Price and Reviews Correlation")
+        st.write(correlation)
+        
+        fig6 = px.scatter(filtered_data, x="number_of_reviews", y="price", color="neighbourhood",
+                          title="Correlation between number of  reviews and price")
+        st.plotly_chart(fig6)
+    else:
+        st.warning("Columns 'price' or 'number_of_reviews' not found in dataset.")
+
 
 # Price Recommendation based on selected filters
 st.sidebar.subheader("Price Recommendation for Each Renting Type")
