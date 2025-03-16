@@ -55,16 +55,14 @@ with tab2:
         st.warning("Columns 'number_of_reviews' or 'price' not found in dataset.")
 with tab3:
     st.subheader("Advanced Analysis")
-    if "price" in df.columns and "number_of_reviews" in df.columns:
-        correlation = filtered_data[["price", "number_of_reviews"]].corr()
-        st.write("### Price and Reviews Correlation")
-        st.write(correlation)
-        
-        fig6 = px.scatter(filtered_data, x="number_of_reviews", y="price", color="neighbourhood",
-                          title="Correlation between number of  reviews and price")
-        st.plotly_chart(fig6)
+
+    if "price" in df.columns and "neighbourhood" in df.columns:
+        fig_new = px.box(filtered_data, x="neighbourhood", y="price", 
+                         title="Price Distribution by Neighbourhood", 
+                         points="all")
+        st.plotly_chart(fig_new)
     else:
-        st.warning("Columns 'price' or 'number_of_reviews' not found in dataset.")
+        st.warning("Columns 'price' or 'neighbourhood' not found in dataset.")
 
 
 # Price Recommendation based on selected filters
